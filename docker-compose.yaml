@@ -1,0 +1,38 @@
+services:
+    jenkins:
+        image: "davidcozens/jenkins:${JENKINS_TAG}"
+
+        environment:
+            - JENKINS_URL=http://${JENKINS_HOST}:${JENKINS_PORT}
+
+        ports:
+            - "$JENKINS_PORT:8080"
+            - "$JENKINS_SLAVE_AGENT_PORT:50000"
+
+        privileged: true
+
+        restart: always
+
+        user: root
+
+        volumes:
+            - type: volume
+              source: jenkins_home
+              target: /var/jenkins_home
+
+            - type: bind
+              source: /var/run/docker.sock
+              target: /var/run/docker.sock
+
+            - type: bind
+              source: /usr/bin/docker
+              target: /usr/bin/docker
+              
+            - type: bind
+              source: /usr/bin/com.docker.cli
+              target: /usr/bin/com.docker.cli
+
+volumes:
+    jenkins_home:
+        name: ${JENKINS_VOLUME}
+        external: true
